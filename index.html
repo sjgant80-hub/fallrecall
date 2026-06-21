@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>◊ fallrecall · take your AI memory back · Progressive Web App (single HTML file)</title>
+<meta name="description" content="fallrecall — a sovereign single-HTML PWA for liberating your AI history from the frontier labs. Import ChatGPT / Claude / Gemini exports, analyse your conversation flavour via local or cascade LLM, generate portable system prompts you can paste into any AI. Anti-lock-in by construction. Single HTML, IDB primary, MIT.">
+<meta name="prime" content="1231">
+<meta name="category" content="sovereignty">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%20%22fallrecall%22%2C%20%22short_name%22%3A%20%22Recall%22%2C%20%22start_url%22%3A%20%22.%22%2C%20%22display%22%3A%20%22standalone%22%2C%20%22background_color%22%3A%20%22%230b0a0f%22%2C%20%22theme_color%22%3A%20%22%23b8974a%22%2C%20%22description%22%3A%20%22AI-history%20liberation%20%5Cu00b7%20sovereign%20export%20bridge%22%2C%20%22icons%22%3A%20%5B%7B%22src%22%3A%20%22data%3Aimage/svg%2Bxml%3Butf8%2C%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%3E%3Crect%20width%3D%2764%27%20height%3D%2764%27%20fill%3D%27%25230b0a0f%27/%3E%3Ctext%20x%3D%2732%27%20y%3D%2744%27%20text-anchor%3D%27middle%27%20font-size%3D%2740%27%20fill%3D%27%2523b8974a%27%20font-family%3D%27serif%27%20font-weight%3D%27bold%27%3E%5Cu25ca%3C/text%3E%3C/svg%3E%22%2C%20%22sizes%22%3A%20%22any%22%2C%20%22type%22%3A%20%22image/svg%2Bxml%22%7D%5D%7D">
+<style>
+:root{--void:#0b0a0f;--void-2:#13121a;--ink:#1a1922;--line:#2a2934;--line-soft:#1f1e28;--cream:#e6e1d6;--cream-dim:#a8a395;--cream-muted:#6e6a5e;--brass:#b8974a;--amber:#ff8c00;--ox:#8b1a1a;--green:#4ade80;--red:#ef4444;--blue:#60a5fa;--yellow:#fbbf24;--violet:#a855f7;--serif:Georgia,'Libre Baskerville',ui-serif,serif;--sans:'Inter',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--mono:'IBM Plex Mono','SF Mono',ui-monospace,Menlo,monospace}
+*{margin:0;padding:0;box-sizing:border-box}html,body{background:var(--void);color:var(--cream);font:14px/1.55 var(--sans);min-height:100dvh;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;background:transparent;border:none;color:inherit}
+input,textarea,select{font-family:inherit;background:var(--ink);border:1px solid var(--line);color:var(--cream);border-radius:3px;padding:8px 11px;outline:none;font-size:13px;width:100%}
+textarea{min-height:80px;resize:vertical;font-family:var(--mono);font-size:12px}
+input:focus,textarea:focus,select:focus{border-color:var(--brass)}
+.app{min-height:100dvh;display:grid;grid-template-rows:64px 1fr}
+header{display:flex;align-items:center;border-bottom:1px solid var(--line);background:var(--void-2);user-select:none;padding:0 22px;gap:14px;position:sticky;top:0;z-index:50}
+.brand .mark{width:38px;height:38px;background:linear-gradient(135deg,var(--brass),var(--amber));border-radius:6px;display:grid;place-items:center;font-family:var(--serif);font-weight:700;font-size:22px;color:var(--void)}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .name{font-family:var(--serif);font-weight:700;font-size:18px}
+.brand .seal{font-family:var(--mono);font-size:10px;color:var(--cream-muted);letter-spacing:.16em;text-transform:uppercase}
+nav.tabs{display:flex;flex:1;justify-content:center;gap:4px;flex-wrap:wrap;overflow-x:auto}
+nav.tabs button{padding:8px 14px;font-size:13px;color:var(--cream-dim);letter-spacing:.04em;border-radius:4px;white-space:nowrap}
+nav.tabs button:hover{color:var(--cream);background:var(--ink)}
+nav.tabs button.active{color:var(--brass);background:var(--ink);border-bottom:2px solid var(--brass)}
+.tier{padding:6px 12px;border-radius:3px;font-size:11px;color:var(--cream-dim);font-family:var(--mono);border:1px solid var(--line);letter-spacing:.06em;text-transform:uppercase}
+main{padding:24px 32px 80px;overflow-y:auto;max-width:1300px;margin:0 auto;width:100%}
+.hero{background:linear-gradient(135deg,rgba(184,151,74,.08),rgba(255,140,0,.04));border:1px solid var(--brass);border-radius:6px;padding:28px 30px;margin-bottom:24px}
+.hero h1{font-family:var(--serif);font-size:26px;font-weight:700;margin-bottom:8px;color:var(--brass)}
+.hero .lede{font-size:14px;color:var(--cream-dim);line-height:1.7;max-width:920px}
+.hero .v-badge{display:inline-block;background:var(--brass);color:var(--void);font-family:var(--mono);font-size:10px;letter-spacing:.12em;padding:3px 8px;border-radius:3px;margin-left:10px;vertical-align:middle}
+.section-h{display:flex;justify-content:space-between;align-items:baseline;margin:24px 0 14px;gap:14px;flex-wrap:wrap}
+.section-h h2{font-family:var(--serif);font-size:18px;font-weight:600}
+.section-h .sub{font-family:var(--mono);font-size:11px;color:var(--cream-muted);letter-spacing:.08em;text-transform:uppercase}
+.card{background:var(--void-2);border:1px solid var(--line);border-radius:5px;padding:18px 20px;margin-bottom:14px}
+.card h3{font-family:var(--serif);font-size:15px;font-weight:600;margin-bottom:10px}
+.import-card{padding:22px 24px;border:1px solid var(--line);border-radius:5px;background:var(--ink);margin-bottom:12px;cursor:pointer;transition:border-color .15s}
+.import-card:hover{border-color:var(--brass)}
+.import-card .head{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.import-card .glyph{font-size:24px;color:var(--brass);font-family:var(--serif)}
+.import-card .name{font-family:var(--serif);font-size:16px;font-weight:600}
+.import-card .desc{font-size:12px;color:var(--cream-dim);line-height:1.6}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.field label{display:block;font-family:var(--mono);font-size:10px;color:var(--cream-muted);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
+.btn{padding:8px 16px;border:1px solid var(--brass);border-radius:3px;font-size:12px;color:var(--cream);background:transparent}
+.btn:hover{border-color:var(--amber);color:var(--amber)}
+.btn.brass{background:var(--brass);color:var(--void);border-color:var(--brass);font-weight:600}
+.btn.brass:hover{background:var(--amber)}
+.btn.sm{padding:5px 11px;font-size:11px}
+.btn.ghost{border-color:var(--line);color:var(--cream-dim)}
+.btn.danger{border-color:var(--red);color:var(--red)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--brass);color:var(--void);padding:10px 20px;border-radius:3px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;opacity:0;transition:all .22s;z-index:1100;pointer-events:none;max-width:90vw;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--red);color:#fff}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.66);display:none;align-items:flex-start;justify-content:center;z-index:1000;padding:60px 22px;overflow-y:auto}
+.modal-bg.open{display:flex}
+.modal{background:var(--void-2);border:1px solid var(--brass);border-radius:6px;padding:24px 26px;max-width:780px;width:100%;max-height:82vh;overflow-y:auto;position:relative}
+.modal h3{font-family:var(--serif);font-size:18px;margin-bottom:16px;color:var(--brass)}
+.modal .close{position:absolute;top:12px;right:14px;color:var(--cream-muted);font-size:22px;line-height:1}
+.modal .close:hover{color:var(--cream)}
+.disclaimer{background:rgba(139,26,26,.12);border:1px solid var(--ox);border-left:3px solid var(--ox);border-radius:3px;padding:12px 16px;margin-bottom:16px;font-size:12px;line-height:1.55;color:var(--cream-dim)}
+.disclaimer strong{color:var(--brass)}
+.conv-row{padding:12px 14px;border:1px solid var(--line);border-radius:3px;margin-bottom:6px;background:var(--ink);display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center}
+.conv-row .src{font-family:var(--mono);font-size:10px;color:var(--violet);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:11px;background:rgba(168,85,247,.1)}
+.conv-row .title{font-weight:600;font-size:13px}
+.conv-row .meta{font-family:var(--mono);font-size:10px;color:var(--cream-muted);letter-spacing:.06em;margin-top:3px}
+.profile-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:14px}
+.profile-card{padding:18px 20px;border:1px solid var(--line);border-radius:5px;background:var(--ink)}
+.profile-card h4{font-family:var(--serif);font-size:14px;color:var(--brass);margin-bottom:10px;font-weight:600}
+.profile-card ul{list-style:none;padding:0;margin:0}
+.profile-card li{padding:5px 0;font-size:12px;color:var(--cream-dim);line-height:1.55;border-bottom:1px solid var(--line-soft)}
+.profile-card li:last-child{border-bottom:none}
+.profile-card li::before{content:'◇ ';color:var(--brass);margin-right:4px}
+.format-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px}
+.format-tabs button{padding:8px 14px;font-size:12px;border:1px solid var(--line);border-radius:3px;color:var(--cream-dim);background:var(--ink)}
+.format-tabs button.active{background:var(--brass);color:var(--void);border-color:var(--brass);font-weight:600}
+.format-tabs button:hover{border-color:var(--brass);color:var(--cream)}
+.format-tabs button.active:hover{color:var(--void)}
+.prompt-output{background:var(--ink);border:1px solid var(--line);border-radius:4px;padding:18px 22px;font-family:var(--mono);font-size:12px;line-height:1.65;color:var(--cream);white-space:pre-wrap;max-height:60vh;overflow:auto}
+.copy-bar{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+.copy-bar .meta{font-family:var(--mono);font-size:10px;color:var(--cream-muted);letter-spacing:.06em}
+.preview-area{background:var(--ink);border:1px solid var(--line);border-radius:4px;padding:14px;font-family:var(--mono);font-size:11px;line-height:1.5;color:var(--cream-dim);white-space:pre-wrap;max-height:60vh;overflow:auto;min-height:200px}
+.preview-area.streaming{color:var(--cream);border-color:var(--green)}
+.cascade-trace{font-family:var(--mono);font-size:11px;background:var(--ink);border:1px solid var(--line);border-radius:3px;padding:10px 12px;margin-top:8px;max-height:200px;overflow-y:auto}
+.cascade-trace .line{padding:3px 0;border-bottom:1px solid var(--line-soft)}
+.cascade-trace .line.ok{color:var(--green)} .cascade-trace .line.fail{color:var(--cream-muted)}
+.provider-row{display:grid;grid-template-columns:auto 90px 1fr 110px 80px;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:3px;margin-bottom:6px;align-items:center;font-size:12px;background:var(--ink)}
+.provider-row .toggle{width:36px;height:20px;background:var(--line);border-radius:11px;position:relative;cursor:pointer;flex-shrink:0}
+.provider-row .toggle.on{background:var(--green)}
+.provider-row .toggle::after{content:'';position:absolute;width:16px;height:16px;background:var(--cream);border-radius:50%;top:2px;left:2px;transition:left .2s}
+.provider-row .toggle.on::after{left:18px}
+.provider-row .nm{font-family:var(--mono);font-size:11px;color:var(--cream);font-weight:600}
+.provider-row .tier-tag{font-family:var(--mono);font-size:9px;letter-spacing:.1em;padding:2px 6px;border-radius:3px;text-transform:uppercase;text-align:center}
+.provider-row .tier-tag.t1{background:rgba(74,222,128,.15);color:var(--green)}
+.provider-row .tier-tag.t2{background:rgba(96,165,250,.15);color:var(--blue)}
+.provider-row .tier-tag.tf{background:rgba(168,85,247,.15);color:var(--violet)}
+.provider-row .tier-tag.tp{background:rgba(255,140,0,.15);color:var(--amber)}
+.provider-row .key-input{padding:5px 8px;font-size:11px}
+.provider-row .status-mini{font-family:var(--mono);font-size:10px;color:var(--cream-muted);text-align:right}
+.inspect-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.inspect-card{background:var(--ink);border:1px solid var(--line);border-radius:4px;padding:14px}
+.inspect-card .num{font-family:var(--serif);font-size:28px;font-weight:700;color:var(--brass)}
+.inspect-card .lbl{font-family:var(--mono);font-size:10px;color:var(--cream-muted);letter-spacing:.1em;text-transform:uppercase;margin-top:4px}
+.empty-state{padding:32px 24px;text-align:center;color:var(--cream-muted);background:var(--ink);border:1px dashed var(--line);border-radius:5px;font-size:13px}
+.banner-attack{padding:16px 20px;border:1px solid var(--gold);border-left:3px solid var(--gold);border-radius:3px;background:linear-gradient(135deg,rgba(184,151,74,0.08),transparent);margin-bottom:18px;font-size:13px;line-height:1.65;color:var(--cream)}
+.banner-attack strong{color:var(--brass)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <div class="mark">◊</div>
+      <div>
+        <div class="name">fallrecall</div>
+        <div class="seal">take your AI memory back · prime 1231 · MIT</div>
+      </div>
+    </div>
+    <nav class="tabs"></nav>
+    <div class="tier">v1.0</div>
+  </header>
+  <main id="main"></main>
+</div>
+<div class="toast" id="toast"></div>
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal">
+    <button class="close" onclick="closeModal()">×</button>
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+<script>
+'use strict';
+
+const PROVIDERS = [
+  { id:'webllm', name:'WebLLM', tier:'T1', tierLabel:'sovereign', priority:1, model:'Llama-3.2-3B-Instruct-q4f16_1-MLC', defaultEnabled:false, supportsStream:true, pricePer1MIn:0, pricePer1MOut:0, note:'In-browser via WebGPU. First load ~2GB. Free, offline, no key.' },
+  { id:'ollama', name:'Ollama (local)', tier:'T2', tierLabel:'sovereign', priority:2, endpoint:'http://localhost:11434/v1/chat/completions', model:'llama3.2', defaultEnabled:true, supportsStream:true, pricePer1MIn:0, pricePer1MOut:0, note:'localhost:11434 · install ollama' },
+  { id:'lmstudio', name:'LM Studio (local)', tier:'T2', tierLabel:'sovereign', priority:3, endpoint:'http://localhost:1234/v1/chat/completions', model:'loaded', defaultEnabled:true, supportsStream:true, pricePer1MIn:0, pricePer1MOut:0, note:'localhost:1234 · loads any GGUF' },
+  { id:'groq', name:'Groq', tier:'T3-free', tierLabel:'free', priority:4, endpoint:'https://api.groq.com/openai/v1/chat/completions', model:'llama-3.3-70b-versatile', requiresKey:true, freeTier:true, defaultEnabled:true, supportsStream:true, pricePer1MIn:0, pricePer1MOut:0, signupUrl:'https://console.groq.com/keys', note:'30 req/min · 14k tokens/min · Llama 3.3 70B' },
+  { id:'openrouter-free', name:'OpenRouter free', tier:'T3-free', tierLabel:'free', priority:5, endpoint:'https://openrouter.ai/api/v1/chat/completions', model:'meta-llama/llama-3.3-70b-instruct:free', requiresKey:true, freeTier:true, defaultEnabled:true, supportsStream:true, pricePer1MIn:0, pricePer1MOut:0, signupUrl:'https://openrouter.ai/keys', note:'Free Llama 3.3 70B + others · 200 req/day' },
+  { id:'google', name:'Google AI Studio', tier:'T3-free', tierLabel:'free', priority:6, endpoint:'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent', model:'gemini-2.5-flash', requiresKey:true, freeTier:true, defaultEnabled:true, supportsStream:true, pricePer1MIn:0, pricePer1MOut:0, signupUrl:'https://aistudio.google.com/apikey', note:'Gemini 2.5 Flash free · 15 req/min · 1M tokens/day' },
+  { id:'cerebras', name:'Cerebras', tier:'T3-free', tierLabel:'free', priority:7, endpoint:'https://api.cerebras.ai/v1/chat/completions', model:'llama-3.3-70b', requiresKey:true, freeTier:true, defaultEnabled:true, supportsStream:true, pricePer1MIn:0, pricePer1MOut:0, signupUrl:'https://cloud.cerebras.ai/platform', note:'Llama 3.3 70B at ~2200 tokens/sec' },
+  { id:'anthropic', name:'Anthropic (paid)', tier:'T3-paid', tierLabel:'paid', priority:8, endpoint:'https://api.anthropic.com/v1/messages', model:'claude-sonnet-4-20250514', requiresKey:true, paid:true, defaultEnabled:false, supportsStream:true, pricePer1MIn:3, pricePer1MOut:15, signupUrl:'https://console.anthropic.com/', note:'Sonnet 4 · highest quality codegen' }
+];
+
+const TABS = [
+  { id:'welcome',   label:'Welcome' },
+  { id:'import',    label:'Import' },
+  { id:'library',   label:'Library' },
+  { id:'analyse',   label:'Analyse' },
+  { id:'profile',   label:'Profile' },
+  { id:'portable',  label:'Portable prompts' },
+  { id:'replay',    label:'Replay' },
+  { id:'providers', label:'LLM Providers' },
+  { id:'mesh',      label:'Mesh' },
+  { id:'inspect',   label:'Inspect' },
+  { id:'settings',  label:'Settings' },
+  { id:'install',   label:'Install' }
+];
+
+const TOOL_INFO = {
+  name: 'fallrecall',
+  version: '1.0.0',
+  prime: 1231,
+  meshChannel: 'fall-recall',
+  category: 'sovereignty',
+  description: 'AI-history liberation · import frontier-lab exports, analyse your flavour, generate portable system prompts.',
+};
+
+let state = {
+  active: 'welcome',
+  providerConfig: {},
+  rateLimits: {},
+  usage: {},
+  webllmEngine: null,
+  webllmStatus: 'unloaded',
+  autoDetected: [],
+  cascadeTrace: [],
+  currentFormat: 'system-long',
+};
+
+const $ = (s, p=document) => p.querySelector(s);
+const $$ = (s, p=document) => [...p.querySelectorAll(s)];
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = p => (p || '') + '_' + Math.random().toString(36).slice(2, 11);
+const now = () => Date.now();
+
+function toast(m, err) { const t=$('#toast'); t.textContent=m; t.classList.toggle('err',!!err); t.classList.add('show'); clearTimeout(t._to); t._to=setTimeout(()=>t.classList.remove('show'),2800); }
+function openModal(title, body) { $('#modalTitle').textContent=title; $('#modalBody').innerHTML=body; $('#modalBg').classList.add('open'); }
+function closeModal() { $('#modalBg').classList.remove('open'); }
+
+const IDB_NAME = 'fallrecall-v1';
+let db;
+function openDB() {
+  return new Promise((res, rej) => {
+    const r = indexedDB.open(IDB_NAME, 1);
+    r.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('config'))         d.createObjectStore('config');
+      if (!d.objectStoreNames.contains('conversations')) d.createObjectStore('conversations', { keyPath:'id' });
+      if (!d.objectStoreNames.contains('memories'))      d.createObjectStore('memories',      { keyPath:'id' });
+      if (!d.objectStoreNames.contains('profile'))       d.createObjectStore('profile');
+      if (!d.objectStoreNames.contains('prompts'))       d.createObjectStore('prompts',       { keyPath:'id' });
+    };
+    r.onsuccess = e => { db = e.target.result; res(db); };
+    r.onerror = rej;
+  });
+}
+function idbGet(s, k) { return new Promise(r => { const tx=db.transaction(s,'readonly'); const q=tx.objectStore(s).get(k); q.onsuccess=()=>r(q.result); }); }
+function idbGetAll(s) { return new Promise(r => { const tx=db.transaction(s,'readonly'); const q=tx.objectStore(s).getAll(); q.onsuccess=()=>r(q.result||[]); }); }
+function idbPut(s, v, k) { return new Promise(r => { const tx=db.transaction(s,'readwrite'); const o=tx.objectStore(s); const q=k!=null?o.put(v,k):o.put(v); q.onsuccess=()=>r(true); }); }
+function idbDelete(s, k) { return new Promise(r => { const tx=db.transaction(s,'readwrite'); const q=tx.objectStore(s).delete(k); q.onsuccess=()=>r(true); }); }
+function idbClear(s) { return new Promise(r => { const tx=db.transaction(s,'readwrite'); const q=tx.objectStore(s).clear(); q.onsuccess=()=>r(true); }); }
+
+async function sha256Hex(input) {
+  const buf = new TextEncoder().encode(typeof input === 'string' ? input : JSON.stringify(input));
+  const h = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(h)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+let chainHead = '0'.repeat(64);
+async function chainNext(payload) {
+  const prev = chainHead;
+  const hash = await sha256Hex(prev + ':' + JSON.stringify(payload) + ':' + now());
+  chainHead = hash; await idbPut('config', hash, 'chainHead');
+  return { prevHash: prev, hash };
+}
+async function loadChainHead() { const h = await idbGet('config', 'chainHead'); if (h) chainHead = h; }
+
+async function loadAll() {
+  if (!db) await openDB();
+  await loadChainHead();
+  state.providerConfig = await idbGet('config', 'providerConfig') || {};
+  state.usage = await idbGet('config', 'usage') || {};
+  for (const p of PROVIDERS) {
+    if (!(p.id in state.providerConfig)) state.providerConfig[p.id] = { enabled:p.defaultEnabled, key:'', customModel:'' };
+    if (!(p.id in state.usage)) state.usage[p.id] = { totalIn:0, totalOut:0, calls:0, lastUsed:0 };
+  }
+  await idbPut('config', state.providerConfig, 'providerConfig');
+}
+async function persistProviderConfig() { await idbPut('config', state.providerConfig, 'providerConfig'); }
+async function persistUsage() { await idbPut('config', state.usage, 'usage'); }
+
+// ─── mesh + cross-seed protocol ───
+window.__fellowSeeds = window.__fellowSeeds || new Map();
+window.__crossSeedHandlers = window.__crossSeedHandlers || {};
+window.__crossSeedPending  = window.__crossSeedPending  || new Map();
+let __sigChan = null, __pingTimer = null;
+function __seedSelfInfo() {
+  return { source: 'fallrecall', name:TOOL_INFO.name, prime:TOOL_INFO.prime, version:TOOL_INFO.version, level:null, mesh:TOOL_INFO.meshChannel, category:TOOL_INFO.category, ts:Date.now() };
+}
+function __pruneFellowSeeds(maxAgeMs) {
+  const cutoff = Date.now() - (maxAgeMs||90000);
+  for (const [k,v] of window.__fellowSeeds.entries()) if (v.lastSeen < cutoff) window.__fellowSeeds.delete(k);
+}
+window.__crossSeedHandlers['introspect'] = async function() { return { manifest:TOOL_INFO, peerCount:window.__fellowSeeds.size, ts:Date.now() }; };
+window.__crossSeedHandlers['records-export'] = async function(payload) {
+  const stores = (payload?.stores||['profile','prompts']).filter(s=>typeof s==='string');
+  const out = {};
+  if (stores.includes('profile')) { out.profile = await idbGet('profile', 'current') || null; }
+  if (stores.includes('prompts')) { out.prompts = await idbGetAll('prompts'); }
+  if (stores.includes('memories')) { out.memories = await idbGetAll('memories'); }
+  if (stores.includes('conversations')) { out.conversations = await idbGetAll('conversations'); }
+  return { records:out, manifest:TOOL_INFO, ts:Date.now() };
+};
+// Friendly request: ask for flavour summary
+window.__crossSeedHandlers['flavour-summary'] = async function() {
+  const profile = await idbGet('profile', 'current');
+  const prompts = await idbGetAll('prompts');
+  if (!profile) return { available:false, note:'No flavour profile yet — analyse some conversations in fallrecall first.' };
+  return { available:true, profile, shortPrompt: prompts.find(p=>p.format==='system-short')?.content || null };
+};
+function initMesh() {
+  try {
+    __sigChan = new BroadcastChannel('fall-signal');
+    __sigChan.postMessage({ type:'hello', ...__seedSelfInfo() });
+    __sigChan.onmessage = async (e) => {
+      const m = e.data||{}; if (!m.type) return;
+      const self = 'fallrecall';
+      if (m.type === 'hello' || m.type === 'pong') {
+        if (!m.source || m.source === self) return;
+        const ex = window.__fellowSeeds.get(m.source) || {};
+        window.__fellowSeeds.set(m.source, { ...ex, ...m, lastSeen: Date.now() });
+        if (state.active === 'inspect' || state.active === 'mesh') try { render(); } catch(e) {}
+      } else if (m.type === 'ping') {
+        try { __sigChan.postMessage({ type:'pong', ...__seedSelfInfo() }); } catch(e) {}
+      } else if (m.type === 'request' && (m.to === self || m.to === '*') && m.from !== self) {
+        const handler = window.__crossSeedHandlers[m.kind]; if (!handler) return;
+        try { const result = await handler(m.payload||{}); __sigChan.postMessage({ type:'response', kind:m.kind, from:self, to:m.from, payload:result, reqId:m.reqId }); }
+        catch (err) { __sigChan.postMessage({ type:'response', kind:m.kind, from:self, to:m.from, payload:{error:err.message}, reqId:m.reqId }); }
+      } else if (m.type === 'response' && m.to === self) {
+        const p = window.__crossSeedPending.get(m.reqId);
+        if (p) { clearTimeout(p.timer); p.resolve(m.payload); window.__crossSeedPending.delete(m.reqId); }
+      }
+    };
+    __pingTimer = setInterval(()=>{ try { __sigChan.postMessage({type:'ping',...__seedSelfInfo()}); __pruneFellowSeeds(90000); } catch(e){} }, 30000);
+  } catch(e) {}
+}
+
+async function autoDetectLocal() {
+  state.autoDetected = [];
+  await Promise.all([
+    fetch('http://127.0.0.1:11434/api/tags').then(r => r.ok && state.autoDetected.push('ollama')).catch(()=>{}),
+    fetch('http://127.0.0.1:1234/v1/models').then(r => r.ok && state.autoDetected.push('lmstudio')).catch(()=>{})
+  ]);
+}
+
+// ─── cascade ───
+function eligibleProviders() {
+  return PROVIDERS.filter(p => state.providerConfig[p.id]?.enabled && (!p.requiresKey || state.providerConfig[p.id]?.key)).sort((a,b)=>a.priority-b.priority);
+}
+function trace(msg, level) {
+  state.cascadeTrace.push({ ts:now(), msg, level:level||'info' });
+  if (state.cascadeTrace.length > 50) state.cascadeTrace.shift();
+  const el = document.getElementById('cascadeTrace'); if (el) renderCascadeTrace();
+}
+function renderCascadeTrace() {
+  const el = document.getElementById('cascadeTrace'); if (!el) return;
+  el.innerHTML = state.cascadeTrace.map(l => `<div class="line ${l.level==='ok'?'ok':l.level==='fail'?'fail':''}">${new Date(l.ts).toLocaleTimeString()} ${esc(l.msg)}</div>`).join('') || '<div class="line">(no calls yet)</div>';
+  el.scrollTop = el.scrollHeight;
+}
+async function cascadeChat(prompt, opts) {
+  opts = opts || {};
+  const onChunk = opts.onChunk || (()=>{});
+  const system = opts.system || 'You are a precise analyser. Output exactly what is asked, no preamble, no apologies.';
+  const elig = eligibleProviders();
+  if (!elig.length) throw new Error('No providers enabled. Configure one in LLM Providers.');
+  trace(`cascade starting · ${elig.length} eligible`);
+  let lastErr = null;
+  for (const p of elig) {
+    trace(`→ trying ${p.name} (${p.tier})`);
+    try {
+      const out = await callProvider(p, system, prompt, onChunk);
+      trace(`✓ ${p.name} returned ${out.length} chars`, 'ok');
+      state.usage[p.id].calls++; state.usage[p.id].totalIn += (system+prompt).length; state.usage[p.id].totalOut += out.length; state.usage[p.id].lastUsed = now();
+      await persistUsage();
+      return { provider:p.id, text:out };
+    } catch (e) { trace(`✗ ${p.name}: ${e.message}`, 'fail'); lastErr = e; }
+  }
+  throw new Error('All providers failed. Last: ' + (lastErr?.message || 'unknown'));
+}
+async function callProvider(p, system, prompt, onChunk) {
+  const cfg = state.providerConfig[p.id]||{}; const model = cfg.customModel || p.model;
+  if (p.id === 'webllm') {
+    if (state.webllmStatus !== 'ready') throw new Error('WebLLM not loaded');
+    const reply = await state.webllmEngine.chat.completions.create({ messages:[{role:'system',content:system},{role:'user',content:prompt}], stream:true });
+    let acc=''; for await (const chunk of reply) { const d=chunk.choices[0]?.delta?.content||''; acc+=d; onChunk(d); } return acc;
+  }
+  if (p.id === 'google') {
+    const url = p.endpoint + '?alt=sse&key=' + encodeURIComponent(cfg.key);
+    const body = { systemInstruction:{parts:[{text:system}]}, contents:[{role:'user',parts:[{text:prompt}]}], generationConfig:{temperature:0.4,maxOutputTokens:4096} };
+    const r = await fetch(url, { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify(body) });
+    if (!r.ok) throw new Error('Google ' + r.status);
+    return await streamSSE(r, onChunk, 'google');
+  }
+  if (p.id === 'anthropic') {
+    const r = await fetch(p.endpoint, { method:'POST', headers:{'content-type':'application/json','x-api-key':cfg.key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}, body:JSON.stringify({ model, max_tokens:4096, stream:true, system, messages:[{role:'user',content:prompt}] }) });
+    if (!r.ok) throw new Error('Anthropic ' + r.status);
+    return await streamSSE(r, onChunk, 'anthropic');
+  }
+  const headers = { 'content-type':'application/json' };
+  if (cfg.key) headers['authorization'] = 'Bearer ' + cfg.key;
+  const r = await fetch(p.endpoint, { method:'POST', headers, body:JSON.stringify({ model, messages:[{role:'system',content:system},{role:'user',content:prompt}], stream:true, temperature:0.4 }) });
+  if (!r.ok) throw new Error(p.name + ' ' + r.status + ': ' + (await r.text()).slice(0,160));
+  return await streamSSE(r, onChunk, 'openai');
+}
+async function streamSSE(response, onChunk, kind) {
+  const reader = response.body.getReader(); const dec = new TextDecoder();
+  let buf='', acc='';
+  while(true) {
+    const {value,done} = await reader.read(); if (done) break;
+    buf += dec.decode(value, {stream:true});
+    const lines = buf.split(/\r?\n/); buf = lines.pop()||'';
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const data = line.slice(6).trim(); if (data === '[DONE]') continue;
+      try {
+        const j = JSON.parse(data); let d='';
+        if (kind === 'anthropic') { if (j.type === 'content_block_delta') d = j.delta?.text||''; }
+        else if (kind === 'google') { d = j.candidates?.[0]?.content?.parts?.[0]?.text||''; }
+        else { d = j.choices?.[0]?.delta?.content||''; }
+        if (d) { acc+=d; onChunk(d); }
+      } catch(e) {}
+    }
+  }
+  return acc;
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// PARSERS
+// ═══════════════════════════════════════════════════════════════
+
+// ChatGPT data export: conversations.json — array of {title, create_time, mapping:{node_id:{id,message:{author:{role},content:{parts:[]}}}}}
+function parseChatGPT(text) {
+  let data;
+  try { data = JSON.parse(text); } catch(e) { throw new Error('Not valid JSON. ChatGPT export should be the conversations.json file.'); }
+  if (!Array.isArray(data)) {
+    if (data.conversations && Array.isArray(data.conversations)) data = data.conversations;
+    else throw new Error('Expected array of conversations.');
+  }
+  const out = [];
+  for (const conv of data) {
+    if (!conv.mapping) continue;
+    const messages = [];
+    const ids = Object.keys(conv.mapping);
+    // Walk the tree in chronological order
+    const sorted = ids.map(id => conv.mapping[id]).filter(n => n.message && n.message.content);
+    sorted.sort((a,b) => (a.message?.create_time||0) - (b.message?.create_time||0));
+    for (const node of sorted) {
+      const m = node.message;
+      const role = m.author?.role || 'unknown';
+      if (role === 'system' || role === 'tool') continue;
+      let content = '';
+      if (m.content?.parts) content = m.content.parts.filter(p => typeof p === 'string').join('\n').trim();
+      else if (typeof m.content === 'string') content = m.content;
+      if (!content) continue;
+      messages.push({ role, content, ts: (m.create_time||0)*1000 });
+    }
+    if (messages.length) {
+      out.push({ id: uid('cgpt'), source: 'chatgpt', title: conv.title || '(untitled)', messages, importedAt: now(), originalCreatedAt: (conv.create_time||0)*1000 });
+    }
+  }
+  return out;
+}
+
+// Claude conversation JSON — single conv or array
+function parseClaude(text) {
+  let data;
+  try { data = JSON.parse(text); } catch(e) { throw new Error('Not valid JSON.'); }
+  if (!Array.isArray(data)) data = [data];
+  const out = [];
+  for (const conv of data) {
+    const messages = [];
+    const arr = conv.chat_messages || conv.messages || [];
+    for (const m of arr) {
+      const role = m.sender === 'human' || m.role === 'user' ? 'user' : m.role || 'assistant';
+      let content = '';
+      if (typeof m.text === 'string') content = m.text;
+      else if (typeof m.content === 'string') content = m.content;
+      else if (Array.isArray(m.content)) content = m.content.map(c => typeof c === 'string' ? c : (c.text||'')).join('\n');
+      if (content.trim()) messages.push({ role, content: content.trim(), ts: new Date(m.created_at||m.ts||0).getTime() || 0 });
+    }
+    if (messages.length) {
+      out.push({ id: uid('clde'), source: 'claude', title: conv.name || conv.title || '(untitled Claude conv)', messages, importedAt: now(), originalCreatedAt: new Date(conv.created_at||0).getTime() || 0 });
+    }
+  }
+  return out;
+}
+
+// Gemini / Google Takeout: 'MyActivity.html' is HTML; users can also paste plain text
+function parseGemini(text) {
+  // Try JSON first
+  try {
+    const data = JSON.parse(text);
+    if (Array.isArray(data)) {
+      // Array of activity items: { title, time, products:['Gemini'], queryText }
+      const out = [];
+      let currentConv = null;
+      for (const item of data) {
+        if (item.queryText || item.title) {
+          if (!currentConv) {
+            currentConv = { id: uid('gem'), source: 'gemini', title: 'Gemini activity ' + new Date(item.time||0).toLocaleDateString(), messages: [], importedAt: now(), originalCreatedAt: new Date(item.time||0).getTime() || 0 };
+          }
+          currentConv.messages.push({ role: 'user', content: item.queryText || item.title, ts: new Date(item.time||0).getTime() || 0 });
+        }
+      }
+      if (currentConv && currentConv.messages.length) out.push(currentConv);
+      return out;
+    }
+  } catch(e) {}
+  // Fallback: parse as alternating User:/Gemini: text blocks
+  return parseGeneric(text, 'gemini');
+}
+
+// Generic — try plain alternating role markers
+function parseGeneric(text, source) {
+  source = source || 'generic';
+  const lines = text.split(/\r?\n/);
+  const messages = [];
+  let currentRole = null, currentContent = [];
+  const roleRe = /^(user|you|human|assistant|claude|chatgpt|gpt|gemini|ai|bot)\s*[:>]?\s*/i;
+  for (const line of lines) {
+    const m = line.match(roleRe);
+    if (m) {
+      if (currentRole && currentContent.length) {
+        messages.push({ role: currentRole, content: currentContent.join('\n').trim(), ts: 0 });
+      }
+      const r = m[1].toLowerCase();
+      currentRole = (r === 'user' || r === 'you' || r === 'human') ? 'user' : 'assistant';
+      currentContent = [line.slice(m[0].length)];
+    } else if (currentRole) {
+      currentContent.push(line);
+    }
+  }
+  if (currentRole && currentContent.length) {
+    messages.push({ role: currentRole, content: currentContent.join('\n').trim(), ts: 0 });
+  }
+  return messages.length ? [{ id: uid('gen'), source, title: 'Generic import · ' + new Date().toLocaleDateString(), messages, importedAt: now(), originalCreatedAt: 0 }] : [];
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// ROUTER + TABS
+// ═══════════════════════════════════════════════════════════════
+
+function renderNav() {
+  const nav = $('nav.tabs');
+  nav.innerHTML = TABS.map(t => `<button data-tab="${t.id}" class="${state.active===t.id?'active':''}">${t.label}</button>`).join('');
+  nav.querySelectorAll('button').forEach(b => b.addEventListener('click', () => switchTab(b.dataset.tab)));
+}
+function switchTab(id) { state.active=id; $$('nav.tabs button').forEach(b => b.classList.toggle('active', b.dataset.tab===id)); render(); }
+function render() {
+  const main = $('#main'); main.innerHTML='';
+  const fn = { welcome:renderWelcome, import:renderImport, library:renderLibrary, analyse:renderAnalyse, profile:renderProfile, portable:renderPortable, replay:renderReplay, providers:renderProviders, mesh:renderMesh, inspect:renderInspect, settings:renderSettings, install:renderInstall }[state.active] || renderWelcome;
+  fn(main);
+}
+
+// ─── WELCOME ───────────────────────────────────────────────────
+async function renderWelcome(main) {
+  const convs = await idbGetAll('conversations');
+  const profile = await idbGet('profile', 'current');
+  main.innerHTML = `
+    <div class="hero">
+      <h1>◊ fallrecall <span class="v-badge">v${TOOL_INFO.version}</span></h1>
+      <p class="lede">Sovereign AI-history liberation. Drop your ChatGPT / Claude / Gemini export here. Run cascade analysis on your conversations to extract your <strong style="color:var(--brass)">flavour</strong> — voice, recurring topics, preferences, anti-preferences. Generate portable system prompts you can paste into any AI. Pipe the prompts back into the sovereign cascade (WebLLM / ollama / local) so you keep <em>your</em> AI relationship without depending on the frontier lab.</p>
+    </div>
+    <div class="banner-attack">
+      <strong>The lock-in problem:</strong> frontier labs (OpenAI, Anthropic, Google) keep your chat history, your memory, your custom instructions, and the model's behavioural fine-tuning on <em>their</em> servers. Switching means starting over. <strong style="color:var(--brass)">fallrecall is the exit ramp.</strong> Your data, structured. Your flavour, captured. Portable forever.
+    </div>
+    <div class="section-h"><h2>State</h2><div class="sub">${convs.length} conversation${convs.length===1?'':'s'} imported · profile ${profile?'analysed':'pending'}</div></div>
+    <div class="card">
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px">
+        <div><h3>1. Import</h3><p style="color:var(--cream-dim);font-size:12px;line-height:1.6;margin-bottom:10px">Drop ChatGPT conversations.json, paste a Claude export, or use the generic format.</p><button class="btn brass sm" onclick="switchTab('import')">Open Import →</button></div>
+        <div><h3>2. Analyse</h3><p style="color:var(--cream-dim);font-size:12px;line-height:1.6;margin-bottom:10px">Run cascade analysis over your conversations to extract voice, interests, preferences, anti-preferences.</p><button class="btn brass sm" onclick="switchTab('analyse')">Open Analyse →</button></div>
+        <div><h3>3. Generate portable prompts</h3><p style="color:var(--cream-dim);font-size:12px;line-height:1.6;margin-bottom:10px">Four output formats. Copy-paste into any AI (sovereign cascade, ollama, Claude.ai, ChatGPT, anywhere).</p><button class="btn brass sm" onclick="switchTab('portable')">Open Portable →</button></div>
+      </div>
+    </div>
+    <div class="section-h"><h2>How the cascade respects sovereignty</h2></div>
+    <div class="card">
+      <p style="font-size:13px;color:var(--cream-dim);line-height:1.7;margin-bottom:10px">When fallrecall analyses your conversations, it sends them through whichever provider you have enabled — in priority order. Default priority is <strong style="color:var(--brass)">sovereign first</strong>: WebLLM (in-browser) → ollama (local) → LM Studio (local) → free cloud tiers → paid Anthropic last.</p>
+      <p style="font-size:13px;color:var(--cream-dim);line-height:1.7">If you load a local model (ollama or WebLLM), <strong style="color:var(--brass)">your conversations never leave your device</strong>. Even when analysing them. If you use a cloud provider, you send only what you've already explicitly imported — and the cloud provider doesn't get to keep it as memory.</p>
+    </div>
+  `;
+}
+
+// ─── IMPORT ────────────────────────────────────────────────────
+function renderImport(main) {
+  main.innerHTML = `
+    <div class="section-h"><h2>Import</h2><div class="sub">drop or paste your export</div></div>
+    <div class="banner-attack"><strong>What is exported:</strong> ChatGPT export = Settings → Data controls → Export data → email link → <code style="color:var(--brass)">conversations.json</code>. Claude export = Settings → Privacy → Export data → JSON. Gemini export = <code style="color:var(--brass)">takeout.google.com</code> → My Activity.</div>
+    <div class="import-card" onclick="document.getElementById('impFile').click()">
+      <div class="head"><div class="glyph">◆</div><div class="name">ChatGPT — conversations.json</div></div>
+      <div class="desc">Drop or click to load the conversations.json from your ChatGPT data export. Every conversation will be parsed and stored locally.</div>
+    </div>
+    <div class="import-card" onclick="pasteImport('claude')">
+      <div class="head"><div class="glyph">◈</div><div class="name">Claude — conversation JSON</div></div>
+      <div class="desc">Paste a single conversation JSON or the full Claude data export. Sender 'human' → user, sender 'assistant' → assistant.</div>
+    </div>
+    <div class="import-card" onclick="pasteImport('gemini')">
+      <div class="head"><div class="glyph">◉</div><div class="name">Gemini — Google Takeout activity</div></div>
+      <div class="desc">Paste Gemini activity JSON from Google Takeout, or paste plain text with User:/Gemini: markers.</div>
+    </div>
+    <div class="import-card" onclick="pasteImport('generic')">
+      <div class="head"><div class="glyph">◌</div><div class="name">Generic — paste any conversation</div></div>
+      <div class="desc">Plain text with role markers (User: / Assistant: / Me: / You:). One conversation per paste. Works for Perplexity, Copilot, anything you can copy.</div>
+    </div>
+    <input id="impFile" type="file" accept=".json" style="display:none" onchange="handleChatGPTFile(this.files[0])">
+    <div class="section-h" style="margin-top:24px"><h2>Bulk paste (JSON only)</h2></div>
+    <div class="card">
+      <p style="font-size:12px;color:var(--cream-dim);margin-bottom:10px">If your ChatGPT file is too large for the file picker on this device, you can paste the raw JSON below (or any other JSON export).</p>
+      <textarea id="impText" rows="10" placeholder="Paste JSON…"></textarea>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <button class="btn brass sm" onclick="handlePasteImport('chatgpt')">parse as ChatGPT</button>
+        <button class="btn sm" onclick="handlePasteImport('claude')">parse as Claude</button>
+        <button class="btn sm" onclick="handlePasteImport('gemini')">parse as Gemini JSON</button>
+        <button class="btn sm" onclick="handlePasteImport('generic')">parse as generic text</button>
+      </div>
+    </div>
+  `;
+}
+window.handleChatGPTFile = async function(file) {
+  if (!file) return;
+  toast('reading ' + file.name + '…');
+  try {
+    const text = await file.text();
+    const convs = parseChatGPT(text);
+    await saveConvs(convs);
+  } catch (e) { toast('parse failed: ' + e.message, true); }
+};
+window.pasteImport = function(source) {
+  const body = `
+    <p style="font-size:12px;color:var(--cream-dim);margin-bottom:10px">Paste the ${source} export below. Supports JSON or plain text with role markers.</p>
+    <textarea id="pasteBody" rows="14" placeholder="paste here…"></textarea>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px">
+      <button class="btn ghost sm" onclick="closeModal()">cancel</button>
+      <button class="btn brass sm" onclick="doImportPaste('${source}')">parse + import</button>
+    </div>
+  `;
+  openModal('Paste ' + source + ' export', body);
+};
+window.doImportPaste = async function(source) {
+  const text = $('#pasteBody').value.trim();
+  if (!text) { toast('paste something first', true); return; }
+  try {
+    let convs = [];
+    if (source === 'chatgpt') convs = parseChatGPT(text);
+    else if (source === 'claude') convs = parseClaude(text);
+    else if (source === 'gemini') convs = parseGemini(text);
+    else convs = parseGeneric(text, source);
+    closeModal();
+    await saveConvs(convs);
+  } catch (e) { toast('parse failed: ' + e.message, true); }
+};
+window.handlePasteImport = async function(source) {
+  const text = $('#impText').value.trim();
+  if (!text) { toast('paste something', true); return; }
+  try {
+    let convs = [];
+    if (source === 'chatgpt') convs = parseChatGPT(text);
+    else if (source === 'claude') convs = parseClaude(text);
+    else if (source === 'gemini') convs = parseGemini(text);
+    else convs = parseGeneric(text, source);
+    await saveConvs(convs);
+    $('#impText').value = '';
+  } catch (e) { toast('parse failed: ' + e.message, true); }
+};
+async function saveConvs(convs) {
+  if (!convs.length) { toast('no conversations parsed', true); return; }
+  for (const c of convs) {
+    const ch = await chainNext({kind:'conv.import', id:c.id, source:c.source, messages:c.messages.length});
+    c.prevHash = ch.prevHash; c.hash = ch.hash;
+    await idbPut('conversations', c);
+  }
+  toast(`✓ imported ${convs.length} conversation${convs.length===1?'':'s'}`);
+  switchTab('library');
+}
+
+// ─── LIBRARY ───────────────────────────────────────────────────
+async function renderLibrary(main) {
+  const convs = (await idbGetAll('conversations')).sort((a,b) => (b.importedAt||0) - (a.importedAt||0));
+  main.innerHTML = `
+    <div class="section-h"><h2>Library</h2><div class="sub">${convs.length} conversation${convs.length===1?'':'s'} · sha-256 chained</div></div>
+    ${convs.length ? convs.map(c => `<div class="conv-row">
+      <div class="src">${esc(c.source)}</div>
+      <div>
+        <div class="title">${esc(c.title)}</div>
+        <div class="meta">${c.messages.length} message${c.messages.length===1?'':'s'} · imported ${new Date(c.importedAt).toLocaleString()}${c.originalCreatedAt?' · originally '+new Date(c.originalCreatedAt).toLocaleDateString():''}</div>
+      </div>
+      <div style="display:flex;gap:6px"><button class="btn sm" onclick="viewConv('${c.id}')">view</button><button class="btn sm danger" onclick="deleteConv('${c.id}')">remove</button></div>
+    </div>`).join('') : '<div class="empty-state">no conversations imported · go to Import →</div>'}
+  `;
+}
+window.viewConv = async function(id) {
+  const c = (await idbGetAll('conversations')).find(x => x.id === id); if (!c) return;
+  const body = `
+    <div style="font-family:var(--mono);font-size:10px;color:var(--cream-muted);letter-spacing:.06em;margin-bottom:14px">${esc(c.source)} · ${c.messages.length} messages · imported ${new Date(c.importedAt).toLocaleString()}</div>
+    <div class="preview-area" style="max-height:60vh">${c.messages.map(m => `<div style="margin-bottom:14px"><div style="font-family:var(--mono);color:var(--brass);font-size:10px;letter-spacing:.06em;margin-bottom:4px">${esc(m.role).toUpperCase()}</div><div style="white-space:pre-wrap;color:var(--cream)">${esc(m.content)}</div></div>`).join('')}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px"><button class="btn sm" onclick="closeModal()">close</button></div>
+  `;
+  openModal(c.title, body);
+};
+window.deleteConv = async function(id) { if (!confirm('Remove conversation?')) return; await idbDelete('conversations', id); await chainNext({kind:'conv.delete', id}); render(); };
+
+// ─── ANALYSE ───────────────────────────────────────────────────
+async function renderAnalyse(main) {
+  const convs = await idbGetAll('conversations');
+  const profile = await idbGet('profile', 'current');
+  main.innerHTML = `
+    <div class="section-h"><h2>Analyse</h2><div class="sub">extract your flavour via cascade</div></div>
+    <div class="banner-attack"><strong>What gets analysed:</strong> only your messages (the assistant's replies are stripped). The cascade looks for: communication style, recurring interests, topics you return to, decisions you make and how, preferences you express, anti-preferences (things you bristle at), the questions you keep asking.</div>
+    <div class="card">
+      <h3>Current state</h3>
+      <p style="font-size:13px;color:var(--cream-dim);margin-bottom:10px">${convs.length} conversation${convs.length===1?'':'s'} in library · ${profile ? 'profile last analysed ' + new Date(profile.analysedAt).toLocaleString() : 'no profile yet'}</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn brass" onclick="runAnalysis()" ${convs.length===0?'disabled':''}>${profile ? 'Re-analyse' : 'Analyse now'} →</button>
+        <button class="btn sm ghost" onclick="switchTab('profile')" ${profile?'':'disabled'}>view current profile</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Cascade trace</h3>
+      <div class="cascade-trace" id="cascadeTrace"></div>
+    </div>
+    <div class="card">
+      <h3>Raw output</h3>
+      <pre class="preview-area" id="analyseOutput">(idle)</pre>
+    </div>
+  `;
+  renderCascadeTrace();
+}
+window.runAnalysis = async function() {
+  const convs = await idbGetAll('conversations');
+  if (!convs.length) { toast('import some conversations first', true); return; }
+  // Build a corpus of just user messages (to keep token count manageable)
+  const corpus = [];
+  for (const c of convs) {
+    for (const m of c.messages) {
+      if (m.role === 'user' && m.content) corpus.push(m.content);
+    }
+  }
+  // Sample if huge (avoid hitting context limits)
+  let sample = corpus;
+  const MAX_CHARS = 60000;
+  if (corpus.join('\n').length > MAX_CHARS) {
+    // Take a stratified sample: 1st 25%, last 25%, random 50% from middle
+    const total = corpus.length;
+    sample = [
+      ...corpus.slice(0, Math.floor(total*0.15)),
+      ...corpus.slice(-Math.floor(total*0.15))
+    ];
+    // Random middle fill until we hit budget
+    const middle = corpus.slice(Math.floor(total*0.15), -Math.floor(total*0.15));
+    while (sample.join('\n').length < MAX_CHARS && middle.length) {
+      const idx = Math.floor(Math.random() * middle.length);
+      sample.push(middle.splice(idx, 1)[0]);
+    }
+  }
+  const userCorpus = sample.join('\n---\n');
+  const system = `You analyse a person's communication corpus and return a structured flavour profile as STRICT JSON. No preamble, no markdown fences. Output starts with { and ends with }.`;
+  const prompt = `Analyse the user-side messages below from a person's AI chat history. Return JSON with these exact keys:
+{
+  "voiceNotes": ["string", ...],         // 5-10 bullets describing how they write (sentence length, tone, hedging vs. assertion, humour, formality)
+  "recurringInterests": ["string", ...], // 5-10 topics they return to
+  "preferences": ["string", ...],         // 5-10 things they explicitly like / want
+  "antiPreferences": ["string", ...],     // 5-10 things they bristle at / explicitly avoid
+  "openQuestions": ["string", ...],       // 3-7 questions they keep asking in different forms
+  "decisionStyle": "string",              // 1 paragraph on how they make decisions
+  "summary": "string"                     // 2-3 sentence profile summary
+}
+
+Be specific. Avoid generic platitudes. Use evidence-based observations only — don't infer beyond what the corpus shows. If the corpus is sparse, say so in summary.
+
+CORPUS:
+${userCorpus}
+
+OUTPUT (JSON only):`;
+  const out = $('#analyseOutput'); out.className = 'preview-area streaming'; out.textContent = '';
+  toast('analysing ' + sample.length + ' messages…');
+  try {
+    const res = await cascadeChat(prompt, { system, onChunk: d => { out.textContent += d; out.scrollTop = out.scrollHeight; } });
+    out.className = 'preview-area';
+    // Parse JSON
+    const m = res.text.match(/\{[\s\S]*\}/);
+    if (!m) { toast('analyser did not return JSON · raw output kept', true); return; }
+    let profile;
+    try { profile = JSON.parse(m[0]); } catch(e) { toast('JSON parse failed: ' + e.message, true); return; }
+    profile.analysedAt = now();
+    profile.providerUsed = res.provider;
+    profile.messagesAnalysed = sample.length;
+    profile.totalMessages = corpus.length;
+    const ch = await chainNext({kind:'profile.analyse', provider:res.provider, n:sample.length});
+    profile.prevHash = ch.prevHash; profile.hash = ch.hash;
+    await idbPut('profile', profile, 'current');
+    toast('✓ profile saved · view in Profile tab');
+    setTimeout(() => switchTab('profile'), 600);
+  } catch (e) {
+    out.className = 'preview-area';
+    out.textContent = '✗ ' + e.message;
+  }
+};
+
+// ─── PROFILE ───────────────────────────────────────────────────
+async function renderProfile(main) {
+  const p = await idbGet('profile', 'current');
+  if (!p) { main.innerHTML = '<div class="section-h"><h2>Profile</h2></div><div class="empty-state">no profile yet · run analysis first</div>'; return; }
+  main.innerHTML = `
+    <div class="section-h"><h2>Your flavour profile</h2><div class="sub">analysed ${new Date(p.analysedAt).toLocaleString()} · ${p.messagesAnalysed}/${p.totalMessages} messages · via ${esc(p.providerUsed||'?')}</div></div>
+    <div class="card">
+      <h3>Summary</h3>
+      <p style="font-size:14px;color:var(--cream);line-height:1.7;font-style:italic">"${esc(p.summary||'(no summary)')}"</p>
+    </div>
+    <div class="card">
+      <h3>Decision style</h3>
+      <p style="font-size:13px;color:var(--cream-dim);line-height:1.7">${esc(p.decisionStyle||'(none)')}</p>
+    </div>
+    <div class="profile-grid">
+      <div class="profile-card"><h4>Voice notes</h4><ul>${(p.voiceNotes||[]).map(v => `<li>${esc(v)}</li>`).join('')||'<li>—</li>'}</ul></div>
+      <div class="profile-card"><h4>Recurring interests</h4><ul>${(p.recurringInterests||[]).map(v => `<li>${esc(v)}</li>`).join('')||'<li>—</li>'}</ul></div>
+      <div class="profile-card"><h4>Preferences (likes)</h4><ul>${(p.preferences||[]).map(v => `<li>${esc(v)}</li>`).join('')||'<li>—</li>'}</ul></div>
+      <div class="profile-card"><h4>Anti-preferences (bristles)</h4><ul>${(p.antiPreferences||[]).map(v => `<li>${esc(v)}</li>`).join('')||'<li>—</li>'}</ul></div>
+      <div class="profile-card"><h4>Open questions</h4><ul>${(p.openQuestions||[]).map(v => `<li>${esc(v)}</li>`).join('')||'<li>—</li>'}</ul></div>
+    </div>
+    <div class="section-h" style="margin-top:24px"><h2>Audit chain</h2></div>
+    <div class="card">
+      <div style="font-family:var(--mono);font-size:11px;color:var(--cream-muted);letter-spacing:.04em">prev: <span style="color:var(--brass)">${esc(p.prevHash||'').slice(0,40)}…</span><br>hash: <span style="color:var(--brass)">${esc(p.hash||'').slice(0,40)}…</span></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn brass" onclick="switchTab('portable')">Generate portable prompts →</button>
+      <button class="btn sm" onclick="switchTab('analyse')">Re-analyse</button>
+    </div>
+  `;
+}
+
+// ─── PORTABLE PROMPTS ──────────────────────────────────────────
+const FORMATS = [
+  { id:'system-long',  label:'System prompt · long',   note:'Full markdown system prompt. Paste at the top of any chat / custom GPT / Claude project.' },
+  { id:'system-short', label:'System prompt · short',  note:'Compressed 150-200 word version for fast paste anywhere.' },
+  { id:'voice-notes',  label:'Voice notes (bullets)',  note:'Pure bullets. Drop into any AI that accepts character / style instructions.' },
+  { id:'anti-prefs',   label:'Anti-preferences only',  note:'What NOT to do. Pair with any other prompt.' },
+];
+
+async function renderPortable(main) {
+  const p = await idbGet('profile', 'current');
+  const prompts = await idbGetAll('prompts');
+  if (!p) { main.innerHTML = '<div class="section-h"><h2>Portable prompts</h2></div><div class="empty-state">no profile yet · run analysis first</div>'; return; }
+  const current = prompts.find(x => x.format === state.currentFormat);
+  main.innerHTML = `
+    <div class="section-h"><h2>Portable prompts</h2><div class="sub">four formats · copy-paste anywhere</div></div>
+    <div class="banner-attack"><strong>Sovereignty in action:</strong> these prompts encode your flavour without depending on the lab that captured it. Paste into Claude.ai, ChatGPT custom instructions, ollama system message, Gemini's saved info, or the cascade in any FallSeed. Your AI relationship travels with you.</div>
+    <div class="card">
+      <div class="format-tabs">
+        ${FORMATS.map(f => `<button class="${state.currentFormat===f.id?'active':''}" onclick="state.currentFormat='${f.id}';render()">${esc(f.label)}</button>`).join('')}
+      </div>
+      <p style="font-size:12px;color:var(--cream-dim);margin-bottom:12px">${esc(FORMATS.find(f=>f.id===state.currentFormat)?.note||'')}</p>
+      ${current ? `
+        <div class="prompt-output" id="promptOut">${esc(current.content)}</div>
+        <div class="copy-bar">
+          <div class="meta">${current.content.length} chars · generated ${new Date(current.generatedAt).toLocaleString()}</div>
+          <div style="display:flex;gap:8px">
+            <button class="btn sm" onclick="copyPrompt('${state.currentFormat}')">copy</button>
+            <button class="btn sm ghost" onclick="regenerate('${state.currentFormat}')">regenerate</button>
+          </div>
+        </div>
+      ` : `
+        <div class="empty-state" style="margin-top:12px">No prompt generated for this format yet</div>
+        <button class="btn brass" style="margin-top:14px" onclick="regenerate('${state.currentFormat}')">Generate →</button>
+      `}
+    </div>
+    <div class="card">
+      <h3>Cascade trace</h3>
+      <div class="cascade-trace" id="cascadeTrace"></div>
+    </div>
+  `;
+  renderCascadeTrace();
+}
+window.copyPrompt = async function(format) {
+  const prompts = await idbGetAll('prompts');
+  const p = prompts.find(x => x.format === format);
+  if (!p) return;
+  try { await navigator.clipboard.writeText(p.content); toast('✓ copied · paste anywhere'); }
+  catch (e) { toast('clipboard failed — long-press the output to select', true); }
+};
+window.regenerate = async function(format) {
+  const profile = await idbGet('profile', 'current');
+  if (!profile) { toast('analyse first', true); return; }
+  const formatPrompts = {
+    'system-long': `Generate a comprehensive markdown system prompt that captures this person's flavour. Include sections: Identity, Voice & Tone, Recurring Interests, What They Want, What They Don't Want, Decision Style, Open Questions Worth Probing. ~500-800 words. The prompt should be addressed to an AI assistant in the second person ("You are helping..."). Output ONLY the system prompt, no preamble.`,
+    'system-short': `Generate a tight, copy-paste system prompt under 200 words capturing this person's flavour. Single paragraph or short paragraphs. Action-oriented (telling the AI what to do, not just describing the user). Output ONLY the prompt.`,
+    'voice-notes': `Generate pure bullet-point voice notes for this person. Each bullet is one short sentence. Categories: voice (tone/sentence-style), interests (topics), preferences (do X), anti-prefs (avoid Y). Output ONLY the bullets, with category headers.`,
+    'anti-prefs': `Generate an anti-preference instruction set — purely what NOT to do when responding to this person. Output as a numbered list with brief rationale per item. 10-15 items.`,
+  };
+  const out = $('#promptOut');
+  if (out) { out.textContent = ''; out.classList.add('streaming'); }
+  toast('regenerating · ' + format);
+  try {
+    const res = await cascadeChat(formatPrompts[format] + '\n\nPROFILE:\n' + JSON.stringify(profile, null, 2), {
+      system: 'You produce ready-to-paste prompts. No preamble. No "Here is your prompt:". Just the prompt itself.',
+      onChunk: d => { if (out) { out.textContent += d; out.scrollTop = out.scrollHeight; } }
+    });
+    if (out) out.classList.remove('streaming');
+    const prompt = { id: uid('pr'), format, content: res.text.trim(), generatedAt: now(), providerUsed: res.provider };
+    const ch = await chainNext({kind:'prompt.gen', format, provider:res.provider}); prompt.prevHash = ch.prevHash; prompt.hash = ch.hash;
+    // Replace existing of same format
+    const existing = (await idbGetAll('prompts')).find(x => x.format === format);
+    if (existing) await idbDelete('prompts', existing.id);
+    await idbPut('prompts', prompt);
+    toast('✓ ' + format + ' ready · click copy');
+    render();
+  } catch (e) { if (out) out.classList.remove('streaming'); toast('✗ ' + e.message, true); }
+};
+
+// ─── REPLAY ────────────────────────────────────────────────────
+async function renderReplay(main) {
+  const convs = await idbGetAll('conversations');
+  main.innerHTML = `
+    <div class="section-h"><h2>Replay</h2><div class="sub">re-send a conversation through your sovereign cascade</div></div>
+    <div class="banner-attack"><strong>Why replay:</strong> see how the sovereign cascade (WebLLM / ollama / Llama 3.3 / Gemini Flash) handles a conversation that originally happened in ChatGPT or Claude. Compare quality. Validate that your flavour survives the migration.</div>
+    ${convs.length ? `
+      <div class="card">
+        <div class="field"><label>Pick a conversation to replay</label><select id="rpConv">${convs.map(c => `<option value="${c.id}">${esc(c.source)} · ${esc(c.title).slice(0,60)} (${c.messages.length} msgs)</option>`).join('')}</select></div>
+        <div class="row">
+          <div class="field"><label>Replay mode</label><select id="rpMode"><option value="last-user">Last user message only</option><option value="full">Full thread (replay all turns)</option></select></div>
+          <div class="field"><label>Use flavour profile?</label><select id="rpFlavour"><option value="yes">yes — prepend system prompt</option><option value="no">no — raw</option></select></div>
+        </div>
+        <button class="btn brass" style="margin-top:10px" onclick="doReplay()">replay through cascade →</button>
+      </div>
+      <div class="card">
+        <h3>Cascade trace</h3>
+        <div class="cascade-trace" id="cascadeTrace"></div>
+      </div>
+      <div class="card">
+        <h3>Replay output</h3>
+        <pre class="preview-area" id="replayOutput">(idle)</pre>
+      </div>
+    ` : '<div class="empty-state">no conversations imported · go to Import →</div>'}
+  `;
+  renderCascadeTrace();
+}
+window.doReplay = async function() {
+  const id = $('#rpConv').value;
+  const mode = $('#rpMode').value;
+  const useFlavour = $('#rpFlavour').value === 'yes';
+  const c = (await idbGetAll('conversations')).find(x => x.id === id);
+  if (!c) return;
+  let prompt;
+  if (mode === 'last-user') {
+    const lastUser = [...c.messages].reverse().find(m => m.role === 'user');
+    if (!lastUser) { toast('no user message in this conv', true); return; }
+    prompt = lastUser.content;
+  } else {
+    prompt = c.messages.map(m => (m.role === 'user' ? 'USER: ' : 'ASSISTANT: ') + m.content).join('\n\n');
+    prompt += '\n\n---\nContinue the conversation as the assistant would.';
+  }
+  let system = 'You are a helpful assistant.';
+  if (useFlavour) {
+    const prompts = await idbGetAll('prompts');
+    const sys = prompts.find(p => p.format === 'system-long') || prompts.find(p => p.format === 'system-short');
+    if (sys) system = sys.content;
+  }
+  const out = $('#replayOutput'); out.className = 'preview-area streaming'; out.textContent = '';
+  toast('replaying · ' + (useFlavour?'with':'without') + ' flavour');
+  try {
+    await cascadeChat(prompt, { system, onChunk: d => { out.textContent += d; out.scrollTop = out.scrollHeight; } });
+    out.className = 'preview-area';
+  } catch (e) { out.className = 'preview-area'; out.textContent = '✗ ' + e.message; }
+};
+
+// ─── MESH ──────────────────────────────────────────────────────
+function renderMesh(main) {
+  const peers = Array.from(window.__fellowSeeds?.values?.()||[]);
+  main.innerHTML = `
+    <div class="section-h"><h2>Mesh</h2><div class="sub">${peers.length} fellow seed${peers.length===1?'':'s'} online · fall-signal protocol</div></div>
+    <div class="banner-attack"><strong>Cross-seed flavour:</strong> any FallSeed on this origin can request your flavour profile from fallrecall via the mesh. fallseed-agents uses it to tune system prompts. fallseed-creator-os uses it to inform journal prompts. Your flavour, your seeds, your data — all on your device.</div>
+    <div class="card">
+      <h3>Fellow seeds online</h3>
+      ${peers.length ? `<div style="font-family:var(--mono);font-size:12px">
+        ${peers.sort((a,b) => (a.source||'').localeCompare(b.source||'')).map(p => `<div style="padding:8px 0;border-bottom:1px solid var(--line-soft);display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center">
+          <div><span style="color:var(--brass);font-weight:600">${esc(p.source||'?')}</span><div style="font-size:10px;color:var(--cream-muted);letter-spacing:.06em;margin-top:3px">prime ${esc(String(p.prime||'?'))} · v${esc(String(p.version||'?'))} · level ${esc(String(p.level??'?'))}${p.mesh?' · '+esc(p.mesh):''}</div></div>
+          <button class="btn sm" onclick="pingPeer('${esc(p.source||'')}')">introspect →</button>
+        </div>`).join('')}
+      </div>` : '<div class="empty-state">no fellow seeds detected · open another FallSeed in this browser to see it appear here</div>'}
+    </div>
+    <div class="card">
+      <h3>Exposed handlers</h3>
+      <p style="font-size:12px;color:var(--cream-dim);margin-bottom:10px">Any peer can send these requests over fall-signal:</p>
+      <ul style="list-style:none;padding:0;font-family:var(--mono);font-size:12px;color:var(--cream-dim)">
+        <li style="padding:6px 0;border-bottom:1px solid var(--line-soft)">◇ <span style="color:var(--brass)">introspect</span> — returns manifest + peer count</li>
+        <li style="padding:6px 0;border-bottom:1px solid var(--line-soft)">◇ <span style="color:var(--brass)">records-export</span> — returns named stores (profile, prompts, memories, conversations)</li>
+        <li style="padding:6px 0">◇ <span style="color:var(--brass)">flavour-summary</span> — returns the analysed profile + short system prompt</li>
+      </ul>
+    </div>
+  `;
+}
+window.pingPeer = async function(target) {
+  if (!target) return;
+  toast('introspecting ' + target + '…');
+  try {
+    const res = await crossSeedRequest(target, 'introspect', {}, { timeoutMs: 3000 });
+    const body = `<div class="preview-area">${esc(JSON.stringify(res, null, 2))}</div>`;
+    openModal('introspect: ' + target, body);
+  } catch (e) { toast('failed: ' + e.message, true); }
+};
+
+async function crossSeedRequest(target, kind, payload, opts) {
+  opts = opts || {}; const reqId = 'r_' + Math.random().toString(36).slice(2,12);
+  return new Promise((resolve,reject) => {
+    const timer = setTimeout(()=>{ window.__crossSeedPending.delete(reqId); reject(new Error('timeout')); }, opts.timeoutMs||3000);
+    window.__crossSeedPending.set(reqId, { resolve, reject, timer });
+    try { __sigChan.postMessage({ type:'request', kind, from:'fallrecall', to:target, payload, reqId }); }
+    catch(e) { clearTimeout(timer); window.__crossSeedPending.delete(reqId); reject(e); }
+  });
+}
+window.crossSeedRequest = crossSeedRequest;
+
+// ─── PROVIDERS (same shape as agents/creator-os) ───────────────
+function renderProviders(main) {
+  main.innerHTML = `
+    <div class="section-h"><h2>LLM providers</h2><div class="sub">priority order · auto-detected: ${state.autoDetected.length?state.autoDetected.join(', '):'none'}</div></div>
+    <div class="banner-attack"><strong>Sovereign first:</strong> defaults prioritise WebLLM (in-browser) > ollama (local) > LM Studio (local) > free cloud > paid. If you load a local model your conversations never leave your device, even during analysis.</div>
+    <div class="card">
+      ${PROVIDERS.map(p => {
+        const cfg = state.providerConfig[p.id]||{};
+        const tc = p.tier==='T1'?'t1':p.tier==='T2'?'t2':p.tier==='T3-free'?'tf':'tp';
+        return `<div class="provider-row"><div class="toggle ${cfg.enabled?'on':''}" onclick="toggleProvider('${p.id}')"></div><div class="tier-tag ${tc}">${p.tier}</div><div><div class="nm">${esc(p.name)}</div><div style="font-size:10px;color:var(--cream-muted);font-family:var(--mono);margin-top:2px;letter-spacing:.04em">${esc(p.note)}</div></div>${p.requiresKey?`<input class="key-input" type="password" value="${esc(cfg.key||'')}" placeholder="${p.signupUrl?'get key →':'api key'}" onchange="setProviderKey('${p.id}', this.value)">`:'<div></div>'}<div class="status-mini">${p.requiresKey && !cfg.key?'<a href="'+(p.signupUrl||'#')+'" target="_blank" style="color:var(--brass)">sign up</a>':(cfg.enabled?'active':'off')}</div></div>`;
+      }).join('')}
+    </div>
+    <div class="card"><h3>WebLLM</h3><button class="btn brass sm" id="loadWebllm">${state.webllmStatus==='ready'?'✓ ready':state.webllmStatus==='loading'?'loading…':'load model'}</button><span id="webllmMsg" style="margin-left:10px;font-size:11px;color:var(--cream-muted)"></span></div>
+  `;
+  $('#loadWebllm').addEventListener('click', loadWebLLM);
+}
+window.toggleProvider = async function(id) { state.providerConfig[id].enabled = !state.providerConfig[id].enabled; await persistProviderConfig(); render(); };
+window.setProviderKey = async function(id, key) { state.providerConfig[id].key = key; await persistProviderConfig(); };
+async function loadWebLLM() {
+  state.webllmStatus = 'loading'; $('#webllmMsg').textContent = 'loading…';
+  try {
+    const { CreateMLCEngine } = await import('https://esm.run/@mlc-ai/web-llm');
+    state.webllmEngine = await CreateMLCEngine('Llama-3.2-3B-Instruct-q4f16_1-MLC', { initProgressCallback: r => { const m=$('#webllmMsg'); if(m) m.textContent = r.text||'loading…'; } });
+    state.webllmStatus = 'ready'; $('#webllmMsg').textContent = '✓ loaded';
+  } catch (e) { state.webllmStatus = 'unloaded'; $('#webllmMsg').textContent = '✗ ' + e.message; }
+}
+
+// ─── INSPECT ───────────────────────────────────────────────────
+async function renderInspect(main) {
+  const cc = (await idbGetAll('conversations')).length;
+  const pc = (await idbGetAll('prompts')).length;
+  const mc = (await idbGetAll('memories')).length;
+  const profile = await idbGet('profile', 'current');
+  main.innerHTML = `
+    <div class="section-h"><h2>Inspect</h2></div>
+    <div class="inspect-grid">
+      <div class="inspect-card"><div class="num">${TOOL_INFO.prime}</div><div class="lbl">Tool prime</div></div>
+      <div class="inspect-card"><div class="num">${cc}</div><div class="lbl">Conversations</div></div>
+      <div class="inspect-card"><div class="num">${profile?'1':'0'}</div><div class="lbl">Profile</div></div>
+      <div class="inspect-card"><div class="num">${pc}</div><div class="lbl">Portable prompts</div></div>
+      <div class="inspect-card"><div class="num">${mc}</div><div class="lbl">Memories</div></div>
+    </div>
+    <div class="card" style="margin-top:18px">
+      <h3>About this tool</h3>
+      <p style="font-size:12px;color:var(--cream-dim);margin-bottom:8px">fallrecall is a sovereignty tool — an exit ramp from frontier-lab AI lock-in. It complements the FallSeed family (vertical seeds L0, domain L1, behaviour L2, actor L3) by providing portable AI context that any seed can pull via the cross-seed mesh.</p>
+      <p style="font-size:12px;color:var(--cream-dim);margin-bottom:8px">Read the <a href="https://www.ai-nativesolutions.com/spec.html" target="_blank" rel="noopener" style="color:var(--brass)">public Fork Seed spec</a> for the architectural invariants.</p>
+      <p style="font-size:11px;color:var(--cream-muted);font-family:var(--mono);letter-spacing:.06em">category <span style="color:var(--brass)">sovereignty</span> · prime <span style="color:var(--brass)">${TOOL_INFO.prime}</span> · MIT</p>
+    </div>
+    <div class="card"><h3>Audit chain head</h3><div style="font-family:var(--mono);font-size:11px;color:var(--brass);word-break:break-all">${esc(chainHead)}</div></div>
+  `;
+}
+
+// ─── SETTINGS ──────────────────────────────────────────────────
+function renderSettings(main) {
+  main.innerHTML = `
+    <div class="section-h"><h2>Settings</h2></div>
+    <div class="card">
+      <h3>Export / import</h3>
+      <p style="font-size:12px;color:var(--cream-dim);margin-bottom:10px">Export everything (conversations + profile + prompts + memories + config + chain).</p>
+      <div style="display:flex;gap:8px"><button class="btn brass sm" onclick="exportAll()">⬇ export JSON</button><button class="btn sm" onclick="document.getElementById('impFileSet').click()">⬆ import JSON</button><input id="impFileSet" type="file" accept=".json" style="display:none" onchange="importAll(this.files[0])"></div>
+    </div>
+    <div class="card"><h3>Wipe</h3><p style="font-size:12px;color:var(--cream-dim);margin-bottom:10px">Removes every record. Cannot be undone.</p><button class="btn danger sm" onclick="wipeAll()">⚠ wipe everything</button></div>
+  `;
+}
+window.exportAll = async function() {
+  const b = { tool:TOOL_INFO, config:{providerConfig:state.providerConfig, chainHead}, conversations:await idbGetAll('conversations'), memories:await idbGetAll('memories'), profile:await idbGet('profile','current'), prompts:await idbGetAll('prompts'), exportedAt:now() };
+  const blob = new Blob([JSON.stringify(b,null,2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='fallrecall-export-'+new Date().toISOString().slice(0,10)+'.json'; a.click();
+  toast('exported');
+};
+window.importAll = async function(file) {
+  if (!file) return;
+  try {
+    const b = JSON.parse(await file.text());
+    if (b.config) { state.providerConfig = b.config.providerConfig||{}; chainHead = b.config.chainHead||chainHead; await persistProviderConfig(); await idbPut('config', chainHead, 'chainHead'); }
+    for (const st of ['conversations','memories','prompts']) { await idbClear(st); for (const r of (b[st]||[])) await idbPut(st, r); }
+    if (b.profile) await idbPut('profile', b.profile, 'current');
+    toast('imported'); render();
+  } catch (e) { toast('import failed: '+e.message, true); }
+};
+window.wipeAll = async function() {
+  if (!confirm('Wipe every record?')) return;
+  for (const st of ['conversations','memories','prompts']) await idbClear(st);
+  await idbClear('profile');
+  chainHead = '0'.repeat(64); await idbPut('config', chainHead, 'chainHead');
+  toast('wiped'); render();
+};
+
+// ─── INSTALL ───────────────────────────────────────────────────
+function renderInstall(main) {
+  main.innerHTML = `
+    <div class="section-h"><h2>Install</h2></div>
+    <div class="card"><h3>Save as HTML</h3><p style="font-size:12px;color:var(--cream-dim);margin-bottom:10px">Right-click → Save As. Keeps this exact version forever. Works file:// — no server needed.</p></div>
+    <div class="card"><h3>Install as PWA</h3><p style="font-size:12px;color:var(--cream-dim);margin-bottom:10px">Chrome / Edge: ⊕ in address bar. iOS/Android: Share → Add to Home Screen. Once installed, opens in its own window, works offline, no browser chrome.</p></div>
+  `;
+}
+
+// ─── BOOT ──────────────────────────────────────────────────────
+async function boot() {
+  await openDB(); await loadAll(); initMesh(); await autoDetectLocal();
+  renderNav(); render();
+}
+boot().catch(e => { console.error(e); document.body.insertAdjacentHTML('beforeend', '<div style="position:fixed;bottom:20px;left:20px;background:#8b1a1a;color:#fff;padding:14px 18px;border-radius:4px;z-index:9999;font-family:monospace">boot failed: '+e.message+'</div>'); });
+</script>
+</body>
+</html>
