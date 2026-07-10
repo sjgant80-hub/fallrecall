@@ -148,22 +148,19 @@ main{padding:24px 32px 80px;overflow-y:auto;max-width:1300px;margin:0 auto;width
     'llama-3b':  { id: 'Llama-3.2-3B-Instruct-q4f16_1-MLC',   size: '~2GB',   label: '3B · balanced · default · most laptops' },
     'qwen-7b':   { id: 'Qwen2.5-7B-Instruct-q4f16_1-MLC',     size: '~5GB',   label: '7B · capable · needs decent GPU (M-series Mac / 8GB+ VRAM)' },
     'llama-8b':  { id: 'Llama-3.1-8B-Instruct-q4f16_1-MLC',   size: '~5GB',   label: '8B · common · needs decent GPU' },
-    'llama-70b': { id: 'Llama-3.1-70B-Instruct-q4f16_1-MLC',  size: '~40GB',  label: '70B · frontier · needs serious GPU + 64GB+ RAM' },
-  };
+    'llama-70b': { id: 'Llama-3.1-70B-Instruct-q4f16_1-MLC',  size: '~40GB',  label: '70B · frontier · needs serious GPU + 64GB+ RAM' }};
   const DEFAULT_MODEL = 'llama-3b';
 
   const T3_PROVIDERS = {
     anthropic: { label: 'Anthropic Claude', models: ['claude-sonnet-4-5','claude-opus-4-7','claude-haiku-4-5'], default: 'claude-sonnet-4-5', url: 'https://api.anthropic.com/v1/messages' },
     openai:    { label: 'OpenAI',           models: ['gpt-4o','gpt-4o-mini','o1-mini'],                          default: 'gpt-4o-mini',      url: 'https://api.openai.com/v1/chat/completions' },
-    google:    { label: 'Google Gemini',    models: ['gemini-1.5-pro','gemini-1.5-flash','gemini-2.0-flash-exp'], default: 'gemini-1.5-flash', url: 'https://generativelanguage.googleapis.com/v1beta/models/' },
-  };
+    google:    { label: 'Google Gemini',    models: ['gemini-1.5-pro','gemini-1.5-flash','gemini-2.0-flash-exp'], default: 'gemini-1.5-flash', url: 'https://generativelanguage.googleapis.com/v1beta/models/' }};
 
   // ─── State ───────────────────────────────────────────────────────
   const STATE = {
     config: loadConfig(),
     ai: { ready: false, loading: false, progress: 0, engine: null, model: null },
-    mesh: { active: false, peers: new Map(), bc: null, signal: null },
-  };
+    mesh: { active: false, peers: new Map(), bc: null, signal: null }};
 
   function loadConfig() {
     try { return JSON.parse(localStorage.getItem('fall-kit.config') || '{}'); }
@@ -230,8 +227,7 @@ main{padding:24px 32px 80px;overflow-y:auto;max-width:1300px;margin:0 auto;width
     if (tier === 'T2' && STATE.ai.ready && STATE.ai.engine) {
       const r = await STATE.ai.engine.chat.completions.create({
         messages: [{ role: 'system', content: systemPrompt }, { role: 'user', content: userMsg }],
-        max_tokens: maxTokens,
-      });
+        max_tokens: maxTokens});
       return r.choices[0].message.content;
     }
     if (tier === 'T3' && STATE.config.api_key && STATE.config.api_provider) {
@@ -248,8 +244,7 @@ main{padding:24px 32px 80px;overflow-y:auto;max-width:1300px;margin:0 auto;width
       const r = await fetch(T3_PROVIDERS.anthropic.url, {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify({ model, max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] }),
-      });
+        body: JSON.stringify({ model, max_tokens: maxTokens, system: sys, messages: [{ role: 'user', content: msg }] })});
       if (!r.ok) throw new Error('Anthropic ' + r.status + ': ' + (await r.text()).slice(0, 200));
       const j = await r.json();
       return j.content[0].text;
@@ -258,8 +253,7 @@ main{padding:24px 32px 80px;overflow-y:auto;max-width:1300px;margin:0 auto;width
       const r = await fetch(T3_PROVIDERS.openai.url, {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'Authorization': 'Bearer ' + key },
-        body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }] }),
-      });
+        body: JSON.stringify({ model, max_tokens: maxTokens, messages: [{ role: 'system', content: sys }, { role: 'user', content: msg }] })});
       if (!r.ok) throw new Error('OpenAI ' + r.status);
       const j = await r.json();
       return j.choices[0].message.content;
@@ -268,8 +262,7 @@ main{padding:24px 32px 80px;overflow-y:auto;max-width:1300px;margin:0 auto;width
       const r = await fetch(T3_PROVIDERS.google.url + model + ':generateContent?key=' + encodeURIComponent(key), {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: sys + '\n\n---\n\n' + msg }] }], generationConfig: { maxOutputTokens: maxTokens } }),
-      });
+        body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: sys + '\n\n---\n\n' + msg }] }], generationConfig: { maxOutputTokens: maxTokens } })});
       if (!r.ok) throw new Error('Google ' + r.status);
       const j = await r.json();
       return j.candidates[0].content.parts[0].text;
@@ -510,8 +503,7 @@ main{padding:24px 32px 80px;overflow-y:auto;max-width:1300px;margin:0 auto;width
     openMint: openMint,  // v1.2 · launch kcc-mint with this seed prefilled as parent
     MODELS: WEBLLM_MODELS,
     PROVIDERS: T3_PROVIDERS,
-    state: STATE,
-  };
+    state: STATE};
 })(typeof window !== 'undefined' ? window : globalThis);
 
 </script>
@@ -583,8 +575,7 @@ const TOOL_INFO = {
   prime: 1231,
   meshChannel: 'fall-recall',
   category: 'sovereignty',
-  description: 'AI-history liberation · import frontier-lab exports, analyse your flavour, generate portable system prompts.',
-};
+  description: 'AI-history liberation · import frontier-lab exports, analyse your flavour, generate portable system prompts.'};
 
 let state = {
   active: 'welcome',
@@ -595,8 +586,7 @@ let state = {
   webllmStatus: 'unloaded',
   autoDetected: [],
   cascadeTrace: [],
-  currentFormat: 'system-long',
-};
+  currentFormat: 'system-long'};
 
 const $ = (s, p=document) => p.querySelector(s);
 const $$ = (s, p=document) => [...p.querySelectorAll(s)];
@@ -1214,8 +1204,7 @@ const FORMATS = [
   { id:'system-long',  label:'System prompt · long',   note:'Full markdown system prompt. Paste at the top of any chat / custom GPT / Claude project.' },
   { id:'system-short', label:'System prompt · short',  note:'Compressed 150-200 word version for fast paste anywhere.' },
   { id:'voice-notes',  label:'Voice notes (bullets)',  note:'Pure bullets. Drop into any AI that accepts character / style instructions.' },
-  { id:'anti-prefs',   label:'Anti-preferences only',  note:'What NOT to do. Pair with any other prompt.' },
-];
+  { id:'anti-prefs',   label:'Anti-preferences only',  note:'What NOT to do. Pair with any other prompt.' }];
 
 async function renderPortable(main) {
   const p = await idbGet('profile', 'current');
@@ -1265,8 +1254,7 @@ window.regenerate = async function(format) {
     'system-long': `Generate a comprehensive markdown system prompt that captures this person's flavour. Include sections: Identity, Voice & Tone, Recurring Interests, What They Want, What They Don't Want, Decision Style, Open Questions Worth Probing. ~500-800 words. The prompt should be addressed to an AI assistant in the second person ("You are helping..."). Output ONLY the system prompt, no preamble.`,
     'system-short': `Generate a tight, copy-paste system prompt under 200 words capturing this person's flavour. Single paragraph or short paragraphs. Action-oriented (telling the AI what to do, not just describing the user). Output ONLY the prompt.`,
     'voice-notes': `Generate pure bullet-point voice notes for this person. Each bullet is one short sentence. Categories: voice (tone/sentence-style), interests (topics), preferences (do X), anti-prefs (avoid Y). Output ONLY the bullets, with category headers.`,
-    'anti-prefs': `Generate an anti-preference instruction set — purely what NOT to do when responding to this person. Output as a numbered list with brief rationale per item. 10-15 items.`,
-  };
+    'anti-prefs': `Generate an anti-preference instruction set — purely what NOT to do when responding to this person. Output as a numbered list with brief rationale per item. 10-15 items.`};
   const out = $('#promptOut');
   if (out) { out.textContent = ''; out.classList.add('streaming'); }
   toast('regenerating · ' + format);
