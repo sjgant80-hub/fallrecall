@@ -41,7 +41,7 @@ If you enable WebLLM (in-browser) or ollama (local), your conversations **never 
 
 ## Cosmology
 
-Prime **1231**, spine-clean mod 127 = 88 = 2³·11. Category **sovereignty**. Mesh channel **`fall-recall`**. Seal **◊·κ=1**.
+Prime **1231**, spine-clean mod 127 = 88 = 2³·11. Category **sovereignty**. Mesh channel **`fall-recall`**. Seal ****.
 
 Part of the FallSeed family — see [the spec](https://www.ai-nativesolutions.com/spec.html).
 
